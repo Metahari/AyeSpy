@@ -158,27 +158,6 @@ Example 2
                     "label": "large"
                 }
             ]
-        },
-        {
-            "url": "https://madisoncollege.edu/program/accounting",
-            "label": "accounting-program",
-            "viewports": [
-                {
-                    "height": 3400,
-                    "width": 640,
-                    "label": "mobile"
-                },
-                {
-                    "height": 1336,
-                    "width": 1024,
-                    "label": "tablet"
-                },
-                {
-                    "height": 3400,
-                    "width": 1400,
-                    "label": "large"
-                }
-            ]
         }
     ]
 }
@@ -232,7 +211,7 @@ For scenarios where you need to use a mobile emulator, pass in the device name t
 
 ### Supported Browsers: Firefox | Chrome
 
-####With Amazon S3
+__With Amazon S3__
 
 Take the latest screenshots for comparison:
 
@@ -253,7 +232,7 @@ Run a single scenario based on label name:
 
 
 
-####Without Amazon S3 (saving images to local folders)
+__Without Amazon S3 (saving images to local folders)__
 
 Take the latest screenshots for comparison:
 
