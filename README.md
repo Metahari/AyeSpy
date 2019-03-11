@@ -177,7 +177,7 @@ export AWS_ACCESS_KEY_ID=keyid
 Create an S3 bucket to store your images.
 Make sure to configure the bucket policy to allow viewing of objects.
 
-Add ```--remote branch branchName ``` to your ayespy snap command to send images to s3.
+Add ```--remote branch branchName ``` to your ayespy snap command to send images to AWS S3.
 
 ## on Ready Script
 
@@ -238,16 +238,9 @@ Take the latest screenshots for comparison:
 
 `ayespy snap --browser chrome --config config.json`
 
-
-Set your latest screenshots as the baselines for future comparisons:
-
 `ayespy update-baseline --browser chrome --config config.json`
 
-Run the comparison between baseline and latest:
-
 `ayespy compare --browser chrome --config config.json`
-
-Run a single scenario based on label name:
 
 `ayespy snap --browser chrome --config config.json --run "scenarioName"`
 
