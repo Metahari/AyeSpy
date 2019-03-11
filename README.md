@@ -9,7 +9,7 @@
 
 ### Brought to you by The Times Tooling team  🛠
 
-Aye Spy is a high performance visual regression tool to catch UI regressions. 
+Aye Spy is a high performance visual regression tool to catch UI regressions.
 
 ![](https://i.imgur.com/3jQXR48.png)
 
@@ -42,10 +42,10 @@ If they are expected, update the baseline images
 
 ## Setup
 
-In order to get the most out of Aye Spy we recommend 
+In order to get the most out of Aye Spy we recommend
 
-  - Using the [selenium images from docker hub](https://hub.docker.com/u/selenium/) for consistent repeatable state 
-  - Cloud storage (currently supporting Amazon S3)
+  - Using the [selenium images from docker hub](https://hub.docker.com/u/selenium/) for consistent repeatable state
+  - Cloud storage (currently supporting Amazon S3) __optional__
 
 
 
@@ -54,18 +54,18 @@ To install the package:
 `npm i -g aye-spy`
 
 
-    ayespy init 
+    ayespy init
 
 Example config to run Aye Spy:
 
 ```
 {
     "gridUrl": "http://selenium-grid:4444/wd/hub",
-    "baseline": "./baseline", 
+    "baseline": "./baseline",
     "latest": "./latest",
     "generatedDiffs": "./generatedDiffs",
     "report": "./reports",
-    "remoteBucketName": "aye-spy-example", 
+    "remoteBucketName": "aye-spy-example",
     "remoteRegion": "eu-west-1",
     "limitAmountOfParallelScenarios": 10, // if you are killing your selenium grid use this to batch up scenarios
     "onBeforeSuiteScript": "./scripts/login.js", // run a script before the entire suite (this script takes no parameters)
@@ -95,6 +95,97 @@ Example config to run Aye Spy:
   }
 ```
 
+Example 2
+   * Multiple viewports per url
+   * Multiple scenarios
+   * Use Capabilities to turn off SSL
+
+```
+{
+    "gridUrl": "http://localhost:4444/wd/hub",
+    "baseline": "./baseline",
+    "latest": "./latest",
+    "generatedDiffs": "./generatedDiffs",
+    "report": "./reports",
+    "remoteBucketName": "visreg-test",
+    "remoteRegion": "us-east-2",
+    "key": ">AMAZON KEY<",
+    "secret": ">Amazon Secret<",
+    "capabilities": [
+        {
+            "acceptInsecureCerts": "True" // Turn off ssl checks for local site
+        }
+    ],
+    "scenarios": [
+        {
+            "url": "http://thetimes.co.uk/",
+            "label": "homepage",
+            "viewports": [
+                {
+                    "height": 3400,
+                    "width": 640,
+                    "label": "mobile"
+                },
+                {
+                    "height": 1336,
+                    "width": 1024,
+                    "label": "tablet"
+                },
+                {
+                    "height": 3400,
+                    "width": 1400,
+                    "label": "large"
+                }
+            ]
+        },
+        {
+            "url": "https://www.thetimes.co.uk/static/contact-us/",
+            "label": "contact",
+            "viewports": [
+                {
+                    "height": 3400,
+                    "width": 640,
+                    "label": "mobile"
+                },
+                {
+                    "height": 1336,
+                    "width": 1024,
+                    "label": "tablet"
+                },
+                {
+                    "height": 3400,
+                    "width": 1400,
+                    "label": "large"
+                }
+            ]
+        },
+        {
+            "url": "https://madisoncollege.edu/program/accounting",
+            "label": "accounting-program",
+            "viewports": [
+                {
+                    "height": 3400,
+                    "width": 640,
+                    "label": "mobile"
+                },
+                {
+                    "height": 1336,
+                    "width": 1024,
+                    "label": "tablet"
+                },
+                {
+                    "height": 3400,
+                    "width": 1400,
+                    "label": "large"
+                }
+            ]
+        }
+    ]
+}
+
+
+```
+
 ## Using S3 Storage for images
 
 In order to use the S3 Storage capabilities you will need to export some aws credentials:
@@ -104,12 +195,14 @@ export AWS_SECRET_ACCESS_KEY=secretkey
 export AWS_ACCESS_KEY_ID=keyid
 ```
 
-Create an S3 bucket to store your images. 
+Create an S3 bucket to store your images.
 Make sure to configure the bucket policy to allow viewing of objects.
+
+Add ```--remote branch branchName ``` to your ayespy snap command to send images to s3.
 
 ## on Ready Script
 
-For scenarios where you need to interact with the page before taking a screenshot, a script can be run which has the [selenium-webdriver](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs) driver and By exposed. 
+For scenarios where you need to interact with the page before taking a screenshot, a script can be run which has the [selenium-webdriver](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs) driver and By exposed.
 
 Only es5 is currently supported so please transpile.
 
@@ -139,9 +232,12 @@ For scenarios where you need to use a mobile emulator, pass in the device name t
 
 ### Supported Browsers: Firefox | Chrome
 
+####With Amazon S3
+
 Take the latest screenshots for comparison:
 
 `ayespy snap --browser chrome --config config.json --remote --branch branchName`
+
 
 Set your latest screenshots as the baselines for future comparisons:
 
@@ -155,6 +251,28 @@ Run a single scenario based on label name:
 
 `ayespy snap --browser chrome --config config.json --remote --run "scenarioName"`
 
+
+
+####Without Amazon S3 (saving images to local folders)
+
+Take the latest screenshots for comparison:
+
+`ayespy snap --browser chrome --config config.json`
+
+
+Set your latest screenshots as the baselines for future comparisons:
+
+`ayespy update-baseline --browser chrome --config config.json`
+
+Run the comparison between baseline and latest:
+
+`ayespy compare --browser chrome --config config.json`
+
+Run a single scenario based on label name:
+
+`ayespy snap --browser chrome --config config.json --run "scenarioName"`
+
+
 ## Visual Regression Tips and Tricks
 
 To make your visual regression tests as robust as possible there are a few points to consider.
@@ -163,10 +281,17 @@ To make your visual regression tests as robust as possible there are a few point
   - Dynamic elements: elements such as ads, videos, anything that moves should removed using the `removeElements` or `hideElements` array.
     - `hideElements` - sets the opacity of the element to 0 and will not affect the positioning of other elements on the page.
     - `removeElements` - hard deletes the element from the Dom and may affect the positioning of other elements.
-    
+
     You want your page under test to be static.
   - The application under test: Aye Spy is really effective when loading a page and screenshotting. You start to loose that value when you perform complicated setup journeys such as going through a checkout. Although possible with `onReadyScript` this should only be used for cases such as closing a cookie message.
   - The selenium grid: We recommend using the container versions of selenium available from dockerhub. This ensures repeatable consistent state across test runs.
+
+## Related Resources
+
+* [Article by L0wry](https://medium.com/ecs-digital/ayespy-a-new-way-to-test-visual-regression-69004981e832)
+* [Video Training with L0wry](https://youtu.be/-tLs1-wB3b8)
+    * [Examples from training](https://github.com/DevOpsPlayground/ldn-27-visual-regression)
+
 
 ## Running AyeSpy on specific branch
 
@@ -186,7 +311,7 @@ Run the comparison between baseline and latest on specific branch:
 In this case `snap` will create latest folder in specific `branch` on S3 bucket and `compare` will compare results on this branch and compare it will baseline. Report will be saved in branch folder.
 
 
-## Limitations 
+## Limitations
 
 As of yet Aye Spy does not support switching contexts to iFrames
 
@@ -205,7 +330,7 @@ Inside the e2eTest folder there are a number of scenarios covering Aye Spy end t
 
 We use Docker to package Aye Spy and then Docker Compose to spin up dependencies such as a Selenium Grid and NGINX to host a test website (/testSite) for Aye Spy to interact with.
 
-To run the e2e tests run 
+To run the e2e tests run
 
 `yarn test:e2e:build`
 
