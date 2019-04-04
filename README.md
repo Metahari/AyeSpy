@@ -56,7 +56,14 @@ To install the package:
 
     ayespy init
 
-Example config to run Aye Spy:
+Example Configs to run Aye Spy
+
+Example 1:
+* Crop to selector
+* Remove and Hide Elements
+* Set cookie
+* Wait for selector to appear
+* Run OnReady js before taking snaps
 
 ```
 {
@@ -109,8 +116,6 @@ Example 2
     "report": "./reports",
     "remoteBucketName": "visreg-test",
     "remoteRegion": "us-east-2",
-    "key": ">AMAZON KEY<",
-    "secret": ">Amazon Secret<",
     "capabilities": [
         {
             "acceptInsecureCerts": "True" // Turn off ssl checks for local site
