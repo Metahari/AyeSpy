@@ -12,30 +12,37 @@ const createReportData = config => {
     scenario.viewports.forEach(viewport => {
       const name = `${scenario.label}-${viewport.label}`;
       const imageName = `${name}.png`;
+      const branch = config.branch;
 
       const baselinePath = path.relative(
         config.report,
-        `${config.baseline}/${imageName}`
+        `${config.baseline}/${branch}/${imageName}`
       );
       const latestPath = path.relative(
         config.report,
-        `${config.latest}/${imageName}`
+        `${config.latest}/${branch}/${imageName}`
       );
       const generatedAbsolutePath = path.resolve(
-        `${config.generatedDiffs}/${imageName}`
+        `${config.generatedDiffs}/${branch}/${imageName}`
       );
       const generatedDiffsPath = path.relative(
         config.report,
-        `${config.generatedDiffs}/${imageName}`
+        `${config.generatedDiffs}/${branch}/${imageName}`
       );
+
+      // logger.info('baselinePath', baselinePath);
+      // logger.info('latestPath', latestPath);
+      // logger.info('generatedAbsolutePath', generatedAbsolutePath);
+      // logger.info('generatedDiffsPath', generatedDiffsPath);
 
       if (fs.existsSync(generatedAbsolutePath)) {
         logger.info('generate-report', `found diff for ${name}`);
         const scenarioData = {
           label: name,
-          baseline: baselinePath,
-          latest: latestPath,
-          generatedDiff: generatedDiffsPath
+          baseline: `/${branch}/baselinePath`,
+          latest: `/${branch}/latestPath`,
+          generatedDiff: `${branch}/generatedDiffsPath`,
+          branch: branch
         };
 
         report.push(scenarioData);
@@ -66,10 +73,11 @@ const writeReport = (config, reportsData) => {
   const reportPresentation = compileTemplate({ reportsData });
   const reportDir = path.resolve(config.report);
 
+  logger.info('branch', config.branch);
   try {
     if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir);
     fs.writeFileSync(`${reportDir}/index.html`, reportPresentation);
-    logger.info('generate-report', 'successfully created report!');
+    logger.info('generate-report', 'successfully created report!unicorn');
     return `${reportDir}/index.html`;
   } catch (err) {
     logger.error(err);

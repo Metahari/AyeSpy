@@ -59,8 +59,24 @@ const createComparisons = async (fs, config, reporter) => {
 
 const createDirectories = (fs, config) =>
   new Promise(resolve => {
+    const branch = config.branch;
+    var latest = config.latest;
+    var generatedDiffs = config.generatedDiffs;
+    var baseline = config.baseline;
+
     const directories = [];
-    directories.push(config.latest, config.generatedDiffs, config.baseline);
+    // directories.push(latest, generatedDiffs, baseline);
+
+    if (branch != 'default') {
+      latest = `${config.latest}/${branch}`;
+      generatedDiffs = `${config}.generatedDiffs}/${branch}`;
+      baseline = `${config.baseline}/${branch}`;
+      // directories.push(`${latest}/${branch}`, `${generatedDiffs}/${branch}`, `${baseline}/${branch}`);
+      logger.info('branch', 'using branches');
+      logger.info('branch', config.branch);
+    }
+
+    directories.push(latest, generatedDiffs, baseline);
 
     directories.forEach(dir => {
       const directoryExists = fs.existsSync(dir) ? true : false;
