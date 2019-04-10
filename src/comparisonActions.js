@@ -59,7 +59,7 @@ const createComparisons = async (fs, config, reporter) => {
 
 const createDirectories = (fs, config) =>
   new Promise(resolve => {
-    const branch = config.branch;
+    // const branch = config.branch;
     var latest = config.latest;
     var generatedDiffs = config.generatedDiffs;
     var baseline = config.baseline;
@@ -67,14 +67,16 @@ const createDirectories = (fs, config) =>
     const directories = [];
     // directories.push(latest, generatedDiffs, baseline);
 
-    if (branch != 'default') {
-      latest = `${config.latest}/${branch}`;
-      generatedDiffs = `${config}.generatedDiffs}/${branch}`;
-      baseline = `${config.baseline}/${branch}`;
-      // directories.push(`${latest}/${branch}`, `${generatedDiffs}/${branch}`, `${baseline}/${branch}`);
-      logger.info('branch', 'using branches');
-      logger.info('branch', config.branch);
-    }
+    // if (branch) {
+    //   latest = `${config.latest}/${branch}`;
+    //   generatedDiffs = `${config.generatedDiffs}/${branch}`;
+    //   baseline = `${config.baseline}/${branch}`;
+    //   logger.info('branch', 'using branches');
+    //   logger.info('branch', config.branch);
+
+    //   const directoryExists = fs.existsSync(branch) ? true : false;
+    //   if (!directoryExists) fs.mkdirSync(branch);
+    // }
 
     directories.push(latest, generatedDiffs, baseline);
 
@@ -91,6 +93,8 @@ const clearDirectories = (fs, config) =>
   new Promise(resolve => {
     const diffsPath = path.resolve(config.generatedDiffs);
     const reportPath = path.resolve(config.report);
+    const branch = config.branch;
+
     [diffsPath, reportPath].forEach(dir => {
       const directoryExists = fs.existsSync(dir) ? true : false;
 
@@ -100,6 +104,14 @@ const clearDirectories = (fs, config) =>
         });
       }
     });
+    // [branch].forEach(Branchdir => {
+    //   const branchExists = fs.existsSync(branch) ? true : false;
+
+    //   if (branchExists) {
+    //     // fs.unlinkSync(`${Branchdir}`);
+    //     fs.unlinkSync(`${generatedDiffs}/Leto`);
+    //   }
+    // });
 
     resolve();
   });

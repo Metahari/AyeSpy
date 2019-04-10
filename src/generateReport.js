@@ -41,9 +41,10 @@ const createReportData = config => {
           label: name,
           baseline: `/${branch}/baselinePath`,
           latest: `/${branch}/latestPath`,
-          generatedDiff: `${branch}/generatedDiffsPath`,
+          generatedDiff: `/${branch}/generatedDiffsPath`,
           branch: branch
         };
+        logger.info('data', 'hmm');
 
         report.push(scenarioData);
       }
@@ -58,7 +59,7 @@ const createRemoteReportData = (url, diffs) =>
 
     return {
       label: scenarioName,
-      baseline: `${url}${browser}/default/baseline/${scenario}`,
+      baseline: `${url}${browser}/${branch}/baseline/${scenario}`,
       latest: `${url}${browser}/${branch}/latest/${scenario}`,
       generatedDiff: `${url}${browser}/${branch}/generatedDiffs/${scenario}`
     };
@@ -73,7 +74,8 @@ const writeReport = (config, reportsData) => {
   const reportPresentation = compileTemplate({ reportsData });
   const reportDir = path.resolve(config.report);
 
-  logger.info('branch', config.branch);
+  logger.info('branchly', config.branch);
+  logger.info('reportDir', reportDir);
   try {
     if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir);
     fs.writeFileSync(`${reportDir}/index.html`, reportPresentation);
