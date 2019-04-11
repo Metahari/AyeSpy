@@ -16,20 +16,22 @@ const createReportData = config => {
 
       const baselinePath = path.relative(
         config.report,
-        `${config.baseline}/${branch}/${imageName}`
+        `${branch}/${path.basename(baselinePath)}`
       );
       const latestPath = path.relative(
         config.report,
-        `${config.latest}/${branch}/${imageName}`
+        latestPath.replace(
+          path.basename(latestPath),
+          `${branch}/${path.basename(latestPath)}`
+        )
       );
       const generatedAbsolutePath = path.resolve(
-        `${config.generatedDiffs}/${branch}/${imageName}`
+        `${config.generatedDiffs}/${imageName}`
       );
       const generatedDiffsPath = path.relative(
         config.report,
-        `${config.generatedDiffs}/${branch}/${imageName}`
+        `${generatedDiffsPath}/${imageName}`
       );
-
       // logger.info('baselinePath', baselinePath);
       // logger.info('latestPath', latestPath);
       // logger.info('generatedAbsolutePath', generatedAbsolutePath);

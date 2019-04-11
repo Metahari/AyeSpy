@@ -57,44 +57,42 @@ const createComparisons = async (fs, config, reporter) => {
   reporter.generateReport();
 };
 
-// const createDirectories = (fs, config) =>
-//   new Promise(resolve => {
-// const branch = config.branch;
-// var latest = config.latest;
-// var generatedDiffs = config.generatedDiffs;
-// var baseline = config.baseline;
-
-// const directories = [];
-// directories.push(latest, generatedDiffs, baseline);
-
-// if (branch) {
-//   latest = `${config.latest}/${branch}`;
-//   generatedDiffs = `${config.generatedDiffs}/${branch}`;
-//   baseline = `${config.baseline}/${branch}`;
-//   logger.info('branch', 'using branches');
-//   logger.info('branch', config.branch);
-
-//   const directoryExists = fs.existsSync(branch) ? true : false;
-//   if (!directoryExists) fs.mkdirSync(branch);
-// }
-
-//   directories.push(latest, generatedDiffs, baseline);
-
-//   directories.forEach(dir => {
-//     const directoryExists = fs.existsSync(dir) ? true : false;
-
-//     if (!directoryExists) fs.mkdirSync(dir);
-//   });
-
-//   resolve();
-// });
 const createDirectories = (fs, config) =>
   new Promise(resolve => {
+    const branch = config.branch;
+    var latest = config.latest;
+    var generatedDiffs = config.generatedDiffs;
+    var baseline = config.baseline;
+
     const directories = [];
-    directories.push(config.latest, config.generatedDiffs, config.baseline);
+
+    if (branch) {
+      latest = latest.replace(
+        path.basename(latest),
+        `${branch}/${path.basename(latest)}`
+      );
+
+      generatedDiffs = generatedDiffs.replace(
+        path.basename(generatedDiffs),
+        `${branch}/${path.basename(generatedDiffs)}`
+      );
+
+      baseline = baseline.replace(
+        path.basename(baseline),
+        `${branch}/${path.basename(baseline)}`
+      );
+      var branchfolderExists = fs.existsSync(branch) ? true : false;
+
+      if (!branchfolderExists) fs.mkdirSync(branch);
+      // logger.info('branch', config.branch);
+    }
+    logger.info('latest', latest);
+    logger.info('gendiff', generatedDiffs);
+    logger.info('baseline', baseline);
+    directories.push(latest, generatedDiffs, baseline);
 
     directories.forEach(dir => {
-      const directoryExists = fs.existsSync(dir) ? true : false;
+      var directoryExists = fs.existsSync(dir) ? true : false;
 
       if (!directoryExists) fs.mkdirSync(dir);
     });
@@ -104,17 +102,32 @@ const createDirectories = (fs, config) =>
 
 const clearDirectories = (fs, config) =>
   new Promise(resolve => {
-    const diffsPath = path.resolve(config.generatedDiffs);
+    const diffsPath = path
+      .resolve(config.generatedDiffs)
+      .replace(
+        path.basename(config.generatedDiffs),
+        `${config.branch}/${path.basename(config.generatedDiffs)}`
+      );
     const reportPath = path.resolve(config.report);
+    const branch = config.branch;
     [diffsPath, reportPath].forEach(dir => {
+      logger.info('diffpath', diffsPath);
       const directoryExists = fs.existsSync(dir) ? true : false;
-
+      const branchExists = fs.existsSync(branch) ? true : false;
       if (directoryExists) {
         fs.readdirSync(dir).forEach(file => {
           fs.unlinkSync(`${dir}/${file}`);
+          if (branchExists) fs.unlinkSync(branch);
         });
       }
     });
+    // [branch].forEach(Branchdir => {
+    //   const branchExists = fs.existsSync(branch) ? true : false;
+
+    //   if (branchExists) {
+    //     fs.unlinkSync(`${Branchdir}`);
+    //   }
+    // });
 
     resolve();
   });
